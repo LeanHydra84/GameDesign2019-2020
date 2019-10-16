@@ -17,9 +17,9 @@ public class roomChange : Monobehaviour {
         
         //Sorting and Instantiating
         arr = arr.OrderBy(x => Random.Range(0,arr.Length).ToArray();
-        for(int i=0; i < locations.Length; i++)
-            Instantiate(arr[i], locations[i].position, location[i].rotation);
+        for(int i=0; i < locations.Length; i++) {
+			Instantiate(arr[i], locations[i].position, location[i].rotation);
             Destroy(locations[i].gameObject);
+		}
     }
-    
 }
