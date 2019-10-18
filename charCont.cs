@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class charCont : MonoBehaviour {
 	
-	public float speed = .5f;
+	public float walkSpeed = .5f;
+	public float runSpeed = 3f;
 	
 	CharacterController cc;
 	const float gravity = 20f;
@@ -22,7 +23,8 @@ public class charCont : MonoBehaviour {
 	
 	void Update() 
 	{
-		
+		float speed = Input.GetKey(KeyCode.LShift) ? runSpeed : walkSpeed; //Sprinting
+
 		mvX = mvZ = 0;
 		if(Input.GetButtonDown("jump") && cc.isGrounded) mvY = jumpforce; //Jumping
 		
@@ -32,10 +34,11 @@ public class charCont : MonoBehaviour {
 		if(Input.GetKey(KeyCode.D)) mvZ += speed; //Right
 		if(Input.GetKey(KeyCode.A)) mvZ -= speed; //Left
 		
-		
-		
+		//Handling Gravity
 		mvY -= gravity * Time.deltaTime;
 		moveDir = new Vector3(mvX, mvY, mvZ);
+		
+		//Making the move
 		cc.Move(moveDir * Time.deltaTIme);
 		
 	}
