@@ -13,6 +13,7 @@ Death scenario
 Creating saves - serializable save class (saved to Application.persistentDataPath)
 Bullet hell boss fights
 Room randomization
+Character aiming at MOUSE only when in battlemode
 //This bitch is NOT READY
 public class saveData
 {
@@ -169,7 +170,6 @@ public class mainScript : MonoBehaviour
         //Lose-Death condition
         if (PlayerState.Health <= 0)
         {
-            //DEATH STATE CODE
             SceneManager.LoadScene("loseCondition"); //Very tenuous
 
         }
