@@ -157,7 +157,7 @@ public class mainScript : MonoBehaviour
             else if (col.gameObject.tag == "pianoKey")
             {
                 PlayerState.Keys += 1;
-				Destroy(col.gameObject);
+		Destroy(col.gameObject);
             }
         }
 
