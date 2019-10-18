@@ -13,8 +13,7 @@ Death scenario
 Creating saves - serializable save class (saved to Application.persistentDataPath)
 Bullet hell boss fights
 Room randomization
-*/
-
+//This bitch is NOT READY
 public class saveData
 {
 
@@ -36,6 +35,7 @@ public class saveData
     }
 
 }
+*/
 
 //QUESTION: CAN I JUST SERIALIZE PlayerState??? -- Probably not
 public static class PlayerState
@@ -46,7 +46,8 @@ public static class PlayerState
         yield return new WaitForSeconds(0.5f);
         canLose = true;
     }
-
+    
+    static int keys = 0;
     static int health = 4;
     static bool canLose = true;
     public static int Health
@@ -61,6 +62,13 @@ public static class PlayerState
             }
         }
     }
+    
+    public static int Keys
+    {
+		get { return keys; }
+		set { if(value > keys || value == 0) keys = value; }
+    }
+    
 }
 
 public class mainScript : MonoBehaviour
@@ -104,7 +112,6 @@ public class mainScript : MonoBehaviour
         mainCam = Camera.main;
         maskOn = false;
         CR_mask = true;
-        data = new saveData();
     }
 
     IEnumerator mask(bool a)
@@ -138,7 +145,7 @@ public class mainScript : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider col)
+    void OnTriggerStay(Collider col) //Has to be OnTriggerStay, OnTriggerEnter only gets called once
     {
         if (Input.GetKeyDown("pickup"))
         {
@@ -149,7 +156,8 @@ public class mainScript : MonoBehaviour
             }
             else if (col.gameObject.tag == "pianoKey")
             {
-                //Code for picking up keys
+                PlayerState.Keys += 1;
+				Destroy(col.gameObject);
             }
         }
 
