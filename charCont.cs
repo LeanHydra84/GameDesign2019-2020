@@ -4,21 +4,28 @@ using UnityEngine;
 
 public class charCont : MonoBehaviour {
 	
+	//Values
 	public float walkSpeed = .5f;
 	public float runMult = 2;
 	private float runSpeed;
-	
-	CharacterController cc;
 	const float gravity = 20f;
 	const float jumpForce = 8f;
-	Vector3 moveDir = Vector3.zero;
+	public Vector3 offset; //Math will be needed to fix the offset when the camera turns into rooms
+	public float smoothness = 10f;
 	
+	//References
+	private Camera mainCam;
+	private CharacterController cc;
+	
+	//Vector Creation
+	Vector3 moveDir = Vector3.zero;
 	float mvY;
 	float mvX;
 	float mvZ;
 	
 	void Start() 
 	{
+		mainCam = Camera.main;
 		runSpeed = walkSpeed * runMult;
 		cc = GetComponent<CharacterController>();
 	}
@@ -26,7 +33,7 @@ public class charCont : MonoBehaviour {
 	void Update() 
 	{
 		float speed = Input.GetKey(KeyCode.LShift) ? runSpeed : walkSpeed; //Sprinting
-
+		
 		mvX = mvZ = 0;
 		if(Input.GetButtonDown("jump") && cc.isGrounded) mvY = jumpforce; //Jumping
 		
@@ -42,6 +49,18 @@ public class charCont : MonoBehaviour {
 		
 		//Making the move
 		cc.Move(moveDir * Time.deltaTIme);
+		
+	}
+	
+	void LateUpdate() //Camera movement stuff
+	{
+		//Could save this transform as a variable rather than just saying transform
+		//This would let me pass in another object for the camera to target if necessary
+		Vector3 toPosition = transform.position + offset; 
+		Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
+		mainCam.transform.position = smoothPos;
+		
+		mainCam.transform.LookAt(transform);
 		
 	}
 	
