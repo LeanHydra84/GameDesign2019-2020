@@ -7,9 +7,11 @@ public class charCont : MonoBehaviour {
 	//Values
 	public float walkSpeed = .5f;
 	public float runMult = 2;
+	public float jumpForce = 8f;
 	private float runSpeed;
 	const float gravity = 20f;
-	const float jumpForce = 8f;
+	
+	//Camera Values
 	public Vector3 offset; //Math will be needed to fix the offset when the camera turns into rooms
 	public float smoothness = 10f;
 	
