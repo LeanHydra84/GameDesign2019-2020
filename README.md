@@ -7,3 +7,5 @@ Scripts for the game design skills project
 mainScript.cs
 
 roomChange.cs
+
+charCont.cs
