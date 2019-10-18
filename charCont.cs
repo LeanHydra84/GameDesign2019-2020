@@ -5,7 +5,8 @@ using UnityEngine;
 public class charCont : MonoBehaviour {
 	
 	public float walkSpeed = .5f;
-	public float runSpeed = 3f;
+	public float runMult = 2;
+	private float runSpeed;
 	
 	CharacterController cc;
 	const float gravity = 20f;
@@ -18,6 +19,7 @@ public class charCont : MonoBehaviour {
 	
 	void Start() 
 	{
+		runSpeed = walkSpeed * runMult;
 		cc = GetComponent<CharacterController>();
 	}
 	
