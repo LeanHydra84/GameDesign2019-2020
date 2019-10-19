@@ -47,19 +47,20 @@ public static class PlayerState
         yield return new WaitForSeconds(0.5f);
         canLose = true;
     }
-    
-    static int keys = 0;
-    static int health = 4;
+
+    static int keys;
+    static int health;
+    static int seconds;
     static bool canLose = true;
     public static int Health
     {
         get { return health; }
         set
         {
-            if (canLose && (health > 0 && health < 4))
+            if (canLose && (value >= 0 && value < 5))
             {
-                mainScript.instance.StartCoroutine(healthDelay());
                 health = value;
+                mainScript.instance.StartCoroutine(healthDelay());
             }
         }
     }
@@ -68,6 +69,12 @@ public static class PlayerState
     {
 		get { return keys; }
 		set { if(value > keys || value == 0) keys = value; }
+    }
+
+    public static int Seconds
+    {
+        get { return seconds; }
+        set { if (value > seconds) seconds = value; }
     }
     
 }
@@ -83,8 +90,7 @@ public class mainScript : MonoBehaviour
     public bool maskOn;
     private bool CR_mask;
 
-    const float Off_intensity = 0.5f;
-    const float On_intensity = 1f;
+    public float intensityMult = 2f;
 
     //GUI
     public Texture2D heart;
@@ -112,6 +118,8 @@ public class mainScript : MonoBehaviour
         mainCam = Camera.main;
         maskOn = false;
         CR_mask = true;
+        PlayerState.Health = 4;
+        PlayerState.Seconds = 0;
     }
 
     IEnumerator mask(bool a)
@@ -130,7 +138,7 @@ public class mainScript : MonoBehaviour
             maskOn = true;
         }
 
-        for (int i = 0; i < lightArray.Length; i++) lightArray[i].intensity = maskOn ? On_intensity : Off_intensity;
+        for (int i = 0; i < lightArray.Length; i++) lightArray[i].intensity = maskOn ? (lightArray[i].intensity * intensityMult) : (lightArray[i].intensity / intensityMult);
         CR_mask = true;
 
     }
@@ -140,9 +148,22 @@ public class mainScript : MonoBehaviour
         for (int i = 0; i < PlayerState.Health; i++) //Cycles once for every point of health
         {
             //Creates rect positions at a const height (7/8ths of the screen height) and exactly 10 pixels apart -- (numbers will be changed)
-            Rect imagePos = new Rect(i * 10, Screen.height * (7 / 8), 10, 10);
-            GUI.DrawTexture(imagePos, heart, ScaleMode.ScaleToFit, true, 10.0f); //Images will scale to the rect size
+            Rect imagePos = new Rect(32 * ((float)i + 0.8f), 25, 21, 21);
+            GUI.DrawTexture(imagePos, heart, ScaleMode.StretchToFill, true, 10.0f); //Images will scale to the rect size
         }
+
+        //Flashlight
+        Event current = Event.current;
+        Vector2 mousePos = new Vector2();
+
+        mousePos.x = current.mousePosition.x;
+        mousePos.y = mainCam.pixelHeight - current.mousePosition.y;
+
+        RaycastHit hit;
+        Ray ray = mainCam.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, mainCam.nearClipPlane));
+
+        if (Physics.Raycast(ray, out hit)) flashlight.transform.LookAt(hit.point);
+        //flashlight.transform.eulerAngles = new Vector3(Mathf.Clamp(flashlight.transform.eulerAngles.x, -20f, 15f), flashlight.transform.eulerAngles.y, 0f);
     }
 
     void OnTriggerStay(Collider col) //Has to be OnTriggerStay, OnTriggerEnter only gets called once
@@ -157,7 +178,7 @@ public class mainScript : MonoBehaviour
             else if (col.gameObject.tag == "pianoKey")
             {
                 PlayerState.Keys += 1;
-		Destroy(col.gameObject);
+		        Destroy(col.gameObject);
             }
         }
 
@@ -182,5 +203,19 @@ public class mainScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M) && CR_mask)
             StartCoroutine(mask(maskOn));
+
+        //NON-FINAL CODE
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            PlayerState.Health -= 1;
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
+
+    private void FixedUpdate()
+    {
+        PlayerState.Seconds = (int)Time.time;
+    }
+
 }
