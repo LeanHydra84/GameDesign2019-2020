@@ -78,7 +78,6 @@ public class mainScript : MonoBehaviour
     //Misc
     private Light flashlight;
     private Camera mainCam;
-    private saveData data;
 
     //Mask
     public bool maskOn;

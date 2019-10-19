@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Linq;
 
-public class roomChange : Monobehaviour {
+public class roomChange : MonoBehaviour {
     
     private Random rand = new Random(); //This line does literally nothing but I feel like it's existence validates my programming skill
     
@@ -19,9 +19,9 @@ public class roomChange : Monobehaviour {
 			locations[j] = go[j].transform;
 		}
         //Sorting and Instantiating
-        arr = arr.OrderBy(x => Random.Range(0,arr.Length).ToArray();
+        arr = arr.OrderBy(x => Random.Range(0,arr.Length)).ToArray();
         for(int i=0; i < locations.Length; i++) {
-			Instantiate(arr[i], locations[i].position, location[i].rotation);
+			Instantiate(arr[i], locations[i].position, locations[i].rotation);
             Destroy(locations[i].gameObject);
 		}
     }

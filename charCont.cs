@@ -34,10 +34,10 @@ public class charCont : MonoBehaviour {
 	
 	void Update() 
 	{
-		float speed = Input.GetKey(KeyCode.LShift) ? runSpeed : walkSpeed; //Sprinting
+		float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed; //Sprinting
 		
 		mvX = mvZ = 0;
-		if(Input.GetButtonDown("jump") && cc.isGrounded) mvY = jumpforce; //Jumping
+		if(Input.GetButtonDown("jump") && cc.isGrounded) mvY = jumpForce; //Jumping
 		
 		//Movement
 		if(Input.GetKey(KeyCode.W)) mvX += speed; //Forwards
@@ -50,7 +50,7 @@ public class charCont : MonoBehaviour {
 		moveDir = new Vector3(mvX, mvY, mvZ);
 		
 		//Making the move
-		cc.Move(moveDir * Time.deltaTIme);
+		cc.Move(moveDir * Time.deltaTime);
 		
 	}
 	
