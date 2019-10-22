@@ -61,6 +61,11 @@ public class charCont : MonoBehaviour {
 		
 	}
 
+    IEnumerator cameraFadeIn()
+    {
+        yield return new WaitForSeconds(0.5f);
+    }
+
     private void OnGUI() // INFO
     {
         string editString =

@@ -83,7 +83,6 @@ public class mainScript : MonoBehaviour
 {
 
     //Misc
-    private Light gg;
     private Light flashlight;
     private Camera mainCam;
 
@@ -205,11 +204,7 @@ public class mainScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M) && CR_mask)
             StartCoroutine(mask(maskOn));
 
-        //NON-FINAL CODE
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            PlayerState.Health -= 1;
-        }
+
         if(Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
     }
