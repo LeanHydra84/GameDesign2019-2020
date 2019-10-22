@@ -83,6 +83,7 @@ public class mainScript : MonoBehaviour
 {
 
     //Misc
+    private Light gg;
     private Light flashlight;
     private Camera mainCam;
 
