@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class charCont : MonoBehaviour {
-	
-	//Values
+
+    //Values
+    public bool cameraFollow;
+    public bool cameraRotate;
 	public float walkSpeed = .5f;
 	public float runMult = 2;
 	public float jumpForce = 8f;
@@ -66,6 +68,14 @@ public class charCont : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if(!cameraFollow && other.tag == "roomTrigger")
+        {
+
+        }
+    }
+
     private void OnGUI() // INFO
     {
         string editString =
@@ -92,11 +102,15 @@ public class charCont : MonoBehaviour {
 	{
 		//Could save this transform as a variable rather than just saying transform
 		//This would let me pass in another object for the camera to target if necessary
-		Vector3 toPosition = transform.position + offset; 
-		Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
-		mainCam.transform.position = smoothPos;
+        if(cameraFollow)
+        {
+            Vector3 toPosition = transform.position + offset;
+            Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
+            mainCam.transform.position = smoothPos;
+        } 
+	
 		
-		mainCam.transform.LookAt(transform);
+		if(cameraRotate) mainCam.transform.LookAt(transform);
 		
 	}
 	
