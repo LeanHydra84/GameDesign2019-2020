@@ -26,6 +26,7 @@ public class charCont : MonoBehaviour {
 	float mvY;
 	float mvX;
 	float mvZ;
+    public Vector3 walkDirection;
 
     public bool airStrafing = true;
 
@@ -43,18 +44,21 @@ public class charCont : MonoBehaviour {
 		
 		if(airStrafing || cc.isGrounded) mvX = mvZ = mvY = 0;
 		if(Input.GetKeyDown(KeyCode.Space) && cc.isGrounded) mvY = jumpForce; //Jumping
-		
-		//Movement
-        if(cc.isGrounded || airStrafing)
+
+        //Movement
+
+        float zSpeed = walkDirection.z * speed;
+        float xSpeed = walkDirection.x * speed;
+
+        if (cc.isGrounded || airStrafing)
         {
-            if(Input.GetKey(KeyCode.W)) mvZ -= speed; //Forwards
-		    if(Input.GetKey(KeyCode.S)) mvZ += speed; //Back
-		    if(Input.GetKey(KeyCode.D)) mvX -= speed; //Right
-		    if(Input.GetKey(KeyCode.A)) mvX += speed; //Left
+            if(Input.GetKey(KeyCode.W)) mvZ -= zSpeed; //Forwards
+		    if(Input.GetKey(KeyCode.S)) mvZ += zSpeed; //Back
+		    if(Input.GetKey(KeyCode.D)) mvX -= xSpeed; //Right
+		    if(Input.GetKey(KeyCode.A)) mvX += xSpeed; //Left
         }
-		
-		
-		//Handling Gravity
+
+        //Handling Gravity
 		mvY -= gravity * Time.deltaTime;
 		moveDir = new Vector3(mvX, mvY, mvZ);
 		
@@ -72,7 +76,8 @@ public class charCont : MonoBehaviour {
     {
         if(!cameraFollow && other.tag == "roomTrigger")
         {
-
+            roomClass rc = other.GetComponent<roomClass>();
+            walkDirection = rc.md;
         }
     }
 
