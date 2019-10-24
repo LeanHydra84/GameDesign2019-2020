@@ -35,7 +35,7 @@ public class charCont : MonoBehaviour {
 		mainCam = Camera.main;
 		runSpeed = walkSpeed * runMult;
 		cc = GetComponent<CharacterController>();
-        mainCam.transform.position = transform.position + offset;
+        	mainCam.transform.position = transform.position + offset;
 	}
 
     void Update() 
@@ -60,16 +60,16 @@ public class charCont : MonoBehaviour {
 
         //Handling Gravity
 		mvY -= gravity * Time.deltaTime;
+	    
+	    	//Making the move
 		moveDir = new Vector3(mvX, mvY, mvZ);
-		
-		//Making the move
 		cc.Move(moveDir * Time.deltaTime);
 		
 	}
 
     IEnumerator cameraFadeIn()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -112,10 +112,9 @@ public class charCont : MonoBehaviour {
             Vector3 toPosition = transform.position + offset;
             Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
             mainCam.transform.position = smoothPos;
-        } 
-	
+        }
 		
-		if(cameraRotate) mainCam.transform.LookAt(transform);
+	if(cameraRotate) mainCam.transform.LookAt(transform);
 		
 	}
 	
