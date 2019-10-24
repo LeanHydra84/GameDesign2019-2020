@@ -27,10 +27,16 @@ public class charCont : MonoBehaviour {
 	float mvX;
 	float mvZ;
     public Vector3 walkDirection;
-
+    private Camera[] allCams;
     public bool airStrafing = true;
 
-	void Start() 
+    private void Awake()
+    {
+        allCams = Camera.allCameras;
+        EnableCamera(Camera.main);
+    }
+
+    void Start() 
 	{
 		mainCam = Camera.main;
 		runSpeed = walkSpeed * runMult;
@@ -67,6 +73,15 @@ public class charCont : MonoBehaviour {
 		
 	}
 
+    void EnableCamera(Camera c)
+    {
+        for (int i = 0; i < allCams.Length; i++)
+        {
+            allCams[i].enabled = false;
+        }
+        c.enabled = true;
+    }
+
     IEnumerator cameraFadeIn()
     {
         yield return new WaitForSeconds(0.1f);
@@ -78,6 +93,8 @@ public class charCont : MonoBehaviour {
         {
             roomClass rc = other.GetComponent<roomClass>();
             walkDirection = rc.md;
+            EnableCamera(rc.roomCam);
+
         }
     }
 
