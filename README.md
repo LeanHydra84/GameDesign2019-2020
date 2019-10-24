@@ -3,21 +3,21 @@
 
 Scripts for the game design skills project
 
-# List of Scripts:
+## List of Scripts:
 mainScript.cs
 
-roomChange.cs
+_roomChange.cs_
 
-charCont.cs
+_charCont.cs_
 
-roomClass.cs
+_roomClass.cs_
 
-# Script Functions
+## Script Functions
 
-mainScript.cs - Handles most gameplay aspects, excluding functions handled by roomChange.cs and charCont.cs
+**mainScript.cs** - _Handles most gameplay aspects, excluding functions handled by roomChange.cs and charCont.cs_
 
-charCont.cs - Handles all character controlling functions, including Camera functions and accessing roomClass.cs
+**charCont.cs** - _Handles all character controlling functions, including Camera functions and accessing roomClass.cs_
 
-roomChange.cs - Handles random room generation as well as flipping the rooms during runtime
+**roomChange.cs** - _Handles random room generation as well as flipping the rooms during runtime_
 
-roomClass.cs - Public class, instances on each room trigger. Holds information about attached cameras, relative movement positions, and room identifiers
+**roomClass.cs** - _Public class, instances on each room trigger. Holds information about attached cameras, relative movement positions, and room identifiers_
