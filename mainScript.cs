@@ -84,7 +84,7 @@ public class mainScript : MonoBehaviour
 
     //Misc
     private Light flashlight;
-    private Camera mainCam;
+    public static Camera mainCam;
 
     //Mask
     public bool maskOn;
@@ -97,9 +97,8 @@ public class mainScript : MonoBehaviour
 
     //Array of lights for the mask
     public Light[] lightArray;
-
+    public Transform flashLightLook;
     public static mainScript instance;
-
     private void Awake()
     {
         instance = this;
@@ -107,6 +106,7 @@ public class mainScript : MonoBehaviour
 
     void Start()
     {
+        Debug.Log(Screen.width+" x "+Screen.height);
         GameObject[] gos = GameObject.FindGameObjectsWithTag("room_lights");
         lightArray = new Light[gos.Length];
         for(int i=0; i<gos.Length; i++)
@@ -159,16 +159,16 @@ public class mainScript : MonoBehaviour
         mousePos.x = current.mousePosition.x;
         mousePos.y = mainCam.pixelHeight - current.mousePosition.y;
 
-        RaycastHit hit;
-        Ray ray = mainCam.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, mainCam.nearClipPlane));
+        Ray ray = Camera.current.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, Camera.current.nearClipPlane));
 
-        if (Physics.Raycast(ray, out hit)) flashlight.transform.LookAt(hit.point);
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity)) flashLightLook.position = hit.point;
+        flashlight.transform.LookAt(flashLightLook.position);
         //flashlight.transform.eulerAngles = new Vector3(Mathf.Clamp(flashlight.transform.eulerAngles.x, -20f, 15f), flashlight.transform.eulerAngles.y, 0f);
     }
 
     void OnTriggerStay(Collider col) //Has to be OnTriggerStay, OnTriggerEnter only gets called once
     {
-        if (Input.GetKeyDown("pickup"))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             if (col.gameObject.tag == "healthPickup")
             {
