@@ -51,7 +51,16 @@ public static class PlayerState
     static int keys;
     static int health;
     static int seconds;
-    static bool canLose = true;
+    static bool canLose;
+	
+	static PlayerState() 
+	{
+		keys = 0;
+		health = 4;
+		seconds = 0;
+		canLose = true;
+	}
+	
     public static int Health
     {
         get { return health; }
@@ -118,8 +127,6 @@ public class mainScript : MonoBehaviour
         mainCam = Camera.main;
         maskOn = false;
         CR_mask = true;
-        PlayerState.Health = 4;
-        PlayerState.Seconds = 0;
     }
 
     IEnumerator mask(bool a)
