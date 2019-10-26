@@ -58,29 +58,7 @@ public class charCont : MonoBehaviour {
 		
 		//Making the move
 		cc.Move(moveDir * Time.deltaTime);
-		
-	}
 
-    private void OnGUI() // INFO
-    {
-        string editString =
-            "AIRSTRAFE = " + airStrafing.ToString().ToUpper() +
-            "\nCAM_OFFSET = " + offset +
-            "\nCAM_SMOOTH = " + smoothness +
-            "\nCONST_GRAVITY = " + gravity +
-            "\nMOVE_SPEED = " + walkSpeed +
-            "\nRUN_SPEED = " + runSpeed +
-            "\nPLAYER_ISRUNNING = " + Input.GetKey(KeyCode.LeftShift).ToString().ToUpper() +
-            "\nPLAYER_ISGROUNDED = " + cc.isGrounded.ToString().ToUpper() +
-            "\nMOVE_VECTOR = " + moveDir +
-            "\nTIME = " + PlayerState.Seconds;
-        GUI.skin.textArea.active.background = 
-        GUI.skin.textArea.normal.background = 
-        GUI.skin.textArea.onHover.background = 
-        GUI.skin.textArea.hover.background = 
-        GUI.skin.textArea.onFocused.background = 
-        GUI.skin.textArea.focused.background = null;
-        GUI.TextArea(new Rect(10, 50, 400, 400), editString);
     }
 
     void LateUpdate() //Camera movement stuff

@@ -138,7 +138,8 @@ public class mainScript : MonoBehaviour
             maskOn = true;
         }
 
-        for (int i = 0; i < lightArray.Length; i++) lightArray[i].intensity = maskOn ? (lightArray[i].intensity * intensityMult) : (lightArray[i].intensity / intensityMult);
+        for (int i = 0; i < lightArray.Length; i++)
+            lightArray[i].intensity = maskOn ? (lightArray[i].intensity * intensityMult) : (lightArray[i].intensity / intensityMult);
         CR_mask = true;
 
     }
@@ -149,26 +150,20 @@ public class mainScript : MonoBehaviour
         {
             //Creates rect positions at a const height (7/8ths of the screen height) and exactly 10 pixels apart -- (numbers will be changed)
             Rect imagePos = new Rect(32 * ((float)i + 0.8f), 25, 21, 21);
-            GUI.DrawTexture(imagePos, heart, ScaleMode.StretchToFill, true, 10.0f); //Images will scale to the rect size
+            GUI.DrawTexture(imagePos, heart, ScaleMode.StretchToFill, true, 10.0f); //Images will scale to the rect size: hahahaha
         }
 
         //Flashlight
-        Event current = Event.current;
-        Vector2 mousePos = new Vector2();
-
-        mousePos.x = current.mousePosition.x;
-        mousePos.y = mainCam.pixelHeight - current.mousePosition.y;
-
         RaycastHit hit;
-        Ray ray = mainCam.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, mainCam.nearClipPlane));
-
+        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit)) flashlight.transform.LookAt(hit.point);
         //flashlight.transform.eulerAngles = new Vector3(Mathf.Clamp(flashlight.transform.eulerAngles.x, -20f, 15f), flashlight.transform.eulerAngles.y, 0f);
+        // ^ Clamps vertical rotation between two constants. Issue: Currently locks to one constant, doesn't go negative
     }
 
     void OnTriggerStay(Collider col) //Has to be OnTriggerStay, OnTriggerEnter only gets called once
     {
-        if (Input.GetKeyDown("pickup"))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             if (col.gameObject.tag == "healthPickup")
             {
@@ -205,10 +200,7 @@ public class mainScript : MonoBehaviour
             StartCoroutine(mask(maskOn));
 
         //NON-FINAL CODE
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            PlayerState.Health -= 1;
-        }
+
         if(Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
     }
