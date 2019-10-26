@@ -51,7 +51,16 @@ public static class PlayerState
     static int keys;
     static int health;
     static int seconds;
-    static bool canLose = true;
+    static bool canLose;
+	
+	static PlayerState() 
+	{
+		keys = 0;
+		health = 4;
+		seconds = 0;
+		canLose = true;
+	}
+	
     public static int Health
     {
         get { return health; }
@@ -84,7 +93,7 @@ public class mainScript : MonoBehaviour
 
     //Misc
     private Light flashlight;
-    private Camera mainCam;
+    public static Camera mainCam;
 
     //Mask
     public bool maskOn;
@@ -97,9 +106,8 @@ public class mainScript : MonoBehaviour
 
     //Array of lights for the mask
     public Light[] lightArray;
-
+    public Transform flashLightLook;
     public static mainScript instance;
-
     private void Awake()
     {
         instance = this;
@@ -107,6 +115,7 @@ public class mainScript : MonoBehaviour
 
     void Start()
     {
+        Debug.Log(Screen.width+" x "+Screen.height);
         GameObject[] gos = GameObject.FindGameObjectsWithTag("room_lights");
         lightArray = new Light[gos.Length];
         for(int i=0; i<gos.Length; i++)
@@ -118,8 +127,6 @@ public class mainScript : MonoBehaviour
         mainCam = Camera.main;
         maskOn = false;
         CR_mask = true;
-        PlayerState.Health = 4;
-        PlayerState.Seconds = 0;
     }
 
     IEnumerator mask(bool a)
@@ -154,9 +161,17 @@ public class mainScript : MonoBehaviour
         }
 
         //Flashlight
+
+        Event current = Event.current;
+        Vector2 mousePos = new Vector2();
+
+        mousePos.x = current.mousePosition.x;
+        mousePos.y = mainCam.pixelHeight - current.mousePosition.y;
+
         RaycastHit hit;
-        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mainCam.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, mainCam.nearClipPlane));
         if (Physics.Raycast(ray, out hit)) flashlight.transform.LookAt(hit.point);
+
         //flashlight.transform.eulerAngles = new Vector3(Mathf.Clamp(flashlight.transform.eulerAngles.x, -20f, 15f), flashlight.transform.eulerAngles.y, 0f);
         // ^ Clamps vertical rotation between two constants. Issue: Currently locks to one constant, doesn't go negative
     }
@@ -198,8 +213,6 @@ public class mainScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M) && CR_mask)
             StartCoroutine(mask(maskOn));
-
-        //NON-FINAL CODE
 
         if(Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();

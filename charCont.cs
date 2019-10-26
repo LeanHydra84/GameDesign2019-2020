@@ -2,75 +2,139 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class charCont : MonoBehaviour {
-	
-	//Values
-	public float walkSpeed = .5f;
-	public float runMult = 2;
-	public float jumpForce = 8f;
-	private float runSpeed;
-	const float gravity = 20f;
-	
-	//Camera Values
-	public Vector3 offset; //Math will be needed to fix the offset when the camera turns into rooms
-	public float smoothness = 10f;
-	
-	//References
-	private Camera mainCam;
-	private CharacterController cc;
-	
-	//Vector Creation
-	Vector3 moveDir = Vector3.zero;
-	float mvY;
-	float mvX;
-	float mvZ;
+public class charCont : MonoBehaviour
+{
 
+    //Values
+    public bool cameraFollow;
+    public bool cameraRotate;
+    public float walkSpeed = .5f;
+    public float runMult = 2;
+    public float jumpForce = 8f;
+    private float runSpeed;
+    const float gravity = 20f;
+
+    //Camera Values
+    public Vector3 offset; //Math will be needed to fix the offset when the camera turns into rooms
+    public float smoothness = 10f;
+
+    //References
+    private Camera mainCam;
+    private CharacterController cc;
+
+    //Vector Creation
+    Vector3 moveDir = Vector3.zero;
+    float mvY;
+    float mvX;
+    float mvZ;
+    public Vector3 walkDirection;
+    private Camera[] allCams;
     public bool airStrafing = true;
 
-	void Start() 
-	{
-		mainCam = Camera.main;
-		runSpeed = walkSpeed * runMult;
-		cc = GetComponent<CharacterController>();
-        mainCam.transform.position = transform.position + offset;
-	}
 
-    void Update() 
-	{
-		float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed; //Sprinting
-		
-		if(airStrafing || cc.isGrounded) mvX = mvZ = mvY = 0;
-		if(Input.GetKeyDown(KeyCode.Space) && cc.isGrounded) mvY = jumpForce; //Jumping
-		
-		//Movement
-        if(cc.isGrounded || airStrafing)
+    void EnableCamera(Camera c)
+    {
+        for (int i = 0; i < allCams.Length; i++)
         {
-            if(Input.GetKey(KeyCode.W)) mvZ -= speed; //Forwards
-		    if(Input.GetKey(KeyCode.S)) mvZ += speed; //Back
-		    if(Input.GetKey(KeyCode.D)) mvX -= speed; //Right
-		    if(Input.GetKey(KeyCode.A)) mvX += speed; //Left
+            allCams[i].enabled = false;
         }
-		
-		
-		//Handling Gravity
-		mvY -= gravity * Time.deltaTime;
-		moveDir = new Vector3(mvX, mvY, mvZ);
-		
-		//Making the move
-		cc.Move(moveDir * Time.deltaTime);
-
+        c.enabled = true;
     }
 
-    void LateUpdate() //Camera movement stuff
-	{
-		//Could save this transform as a variable rather than just saying transform
-		//This would let me pass in another object for the camera to target if necessary
-		Vector3 toPosition = transform.position + offset; 
-		Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
-		mainCam.transform.position = smoothPos;
-		
-		mainCam.transform.LookAt(transform);
-		
-	}
-	
+    private void Awake()
+    {
+        allCams = Camera.allCameras;
+        EnableCamera(Camera.main);
+    }
+
+    void Start()
+    {
+        mainCam = Camera.main;
+        runSpeed = walkSpeed * runMult;
+        cc = GetComponent<CharacterController>();
+        mainCam.transform.position = transform.position + offset;
+    }
+
+    void Update()
+    {
+        float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed; //Sprinting
+
+        if (airStrafing || cc.isGrounded) mvX = mvZ = mvY = 0;
+        if (Input.GetKeyDown(KeyCode.Space) && cc.isGrounded) mvY = jumpForce; //Jumping
+
+        //Movement
+
+        float zSpeed = walkDirection.z * speed;
+        float xSpeed = walkDirection.x * speed;
+
+        if (cc.isGrounded || airStrafing)
+        {
+            if (Input.GetKey(KeyCode.W)) mvZ -= zSpeed; //Forwards
+            if (Input.GetKey(KeyCode.S)) mvZ += zSpeed; //Back
+            if (Input.GetKey(KeyCode.D)) mvX -= xSpeed; //Right
+            if (Input.GetKey(KeyCode.A)) mvX += xSpeed; //Left
+        }
+
+        //Handling Gravity
+        mvY -= gravity * Time.deltaTime;
+
+        //Making the move
+        moveDir = new Vector3(mvX, mvY, mvZ);
+        cc.Move(moveDir * Time.deltaTime);
+
+        IEnumerator cameraFadeIn()
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        void OnTriggerEnter(Collider other)
+        {
+            if (!cameraFollow && other.tag == "roomTrigger")
+            {
+                roomClass rc = other.GetComponent<roomClass>();
+                walkDirection = rc.md;
+                EnableCamera(rc.roomCam);
+
+            }
+        }
+
+        void OnGUI() // INFO
+        {
+            string editString =
+                "AIRSTRAFE = " + airStrafing.ToString().ToUpper() +
+                "\nCAM_OFFSET = " + offset +
+                "\nCAM_SMOOTH = " + smoothness +
+                "\nCONST_GRAVITY = " + gravity +
+                "\nMOVE_SPEED = " + walkSpeed +
+                "\nRUN_SPEED = " + runSpeed +
+                "\nPLAYER_ISRUNNING = " + Input.GetKey(KeyCode.LeftShift).ToString().ToUpper() +
+                "\nPLAYER_ISGROUNDED = " + cc.isGrounded.ToString().ToUpper() +
+                "\nMOVE_VECTOR = " + moveDir +
+                "\nTIME = " + PlayerState.Seconds;
+            GUI.skin.textArea.active.background =
+            GUI.skin.textArea.normal.background =
+            GUI.skin.textArea.onHover.background =
+            GUI.skin.textArea.hover.background =
+            GUI.skin.textArea.onFocused.background =
+            GUI.skin.textArea.focused.background = null;
+            GUI.TextArea(new Rect(10, 50, 400, 400), editString);
+
+        }
+
+        void LateUpdate() //Camera movement stuff
+        {
+            //Could save this transform as a variable rather than just saying transform
+            //This would let me pass in another object for the camera to target if necessary
+            if (cameraFollow)
+            {
+                Vector3 toPosition = transform.position + offset;
+                Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
+                mainCam.transform.position = smoothPos;
+            }
+
+            if (cameraRotate) mainCam.transform.LookAt(transform);
+
+        }
+
+    }
 }
