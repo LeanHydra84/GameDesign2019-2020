@@ -53,15 +53,15 @@ public static class PlayerState
     static int health;
     static int seconds;
     static bool canLose;
-	
-	static PlayerState() 
-	{
-		keys = 0;
-		health = 4;
-		seconds = 0;
-		canLose = true;
-	}
-	
+
+    static PlayerState()
+    {
+        keys = 0;
+        health = 4;
+        seconds = 0;
+        canLose = true;
+    }
+
     public static int Health
     {
         get { return health; }
@@ -74,11 +74,11 @@ public static class PlayerState
             }
         }
     }
-    
+
     public static int Keys
     {
-		get { return keys; }
-		set { if(value > keys || value == 0) keys = value; }
+        get { return keys; }
+        set { if (value > keys || value == 0) keys = value; }
     }
 
     public static int Seconds
@@ -86,7 +86,7 @@ public static class PlayerState
         get { return seconds; }
         set { if (value > seconds) seconds = value; }
     }
-    
+
 }
 
 public class mainScript : MonoBehaviour
@@ -94,7 +94,6 @@ public class mainScript : MonoBehaviour
 
     //Misc
     private Light flashlight;
-    public static Camera mainCam;
     public float timeScale;
     public Text time;
 
@@ -106,7 +105,6 @@ public class mainScript : MonoBehaviour
 
     //GUI
     public Texture2D heart;
-
     //Array of lights for the mask
     public Light[] lightArray;
     public static mainScript instance;
@@ -118,16 +116,12 @@ public class mainScript : MonoBehaviour
 
     void Start()
     {
-        Debug.Log(Screen.width+" x "+Screen.height);
+        Debug.Log(Screen.width + " x " + Screen.height);
         GameObject[] gos = GameObject.FindGameObjectsWithTag("room_lights");
         lightArray = new Light[gos.Length];
-        for(int i=0; i<gos.Length; i++)
-        {
-            lightArray[i] = gos[i].GetComponent<Light>();
-        }
+        for (int i = 0; i < gos.Length; i++) lightArray[i] = gos[i].GetComponent<Light>();
         flashlight = GameObject.FindWithTag("flashlight").GetComponent<Light>();
 
-        mainCam = Camera.main;
         maskOn = false;
         CR_mask = true;
     }
@@ -139,12 +133,12 @@ public class mainScript : MonoBehaviour
 
         if (a)
         {
-            mainCam.cullingMask &= ~(1 << LayerMask.NameToLayer("ghosts"));//Enables culling mask for ghosts
+            charCont.mainCam.cullingMask &= ~(1 << LayerMask.NameToLayer("ghosts"));//Enables culling mask for ghosts
             maskOn = false;
         }
-        else 
+        else
         {
-            mainCam.cullingMask |= 1 << LayerMask.NameToLayer("ghosts"); //Enables culling mask for the ghosts
+            charCont.mainCam.cullingMask |= 1 << LayerMask.NameToLayer("ghosts"); //Enables culling mask for the ghosts
             maskOn = true;
         }
 
@@ -169,11 +163,11 @@ public class mainScript : MonoBehaviour
         Vector2 mousePos = new Vector2();
 
         mousePos.x = current.mousePosition.x;
-        mousePos.y = mainCam.pixelHeight - current.mousePosition.y;
-
+        mousePos.y = charCont.mainCam.pixelHeight - current.mousePosition.y;
+        int lmask = ~(1 << LayerMask.NameToLayer("triggers"));
         RaycastHit hit;
-        Ray ray = mainCam.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, mainCam.nearClipPlane));
-        if (Physics.Raycast(ray, out hit)) flashlight.transform.LookAt(hit.point);
+        Ray ray = charCont.mainCam.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, charCont.mainCam.nearClipPlane));
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, lmask)) flashlight.transform.LookAt(hit.point);
 
         //flashlight.transform.eulerAngles = new Vector3(Mathf.Clamp(flashlight.transform.eulerAngles.x, -20f, 15f), flashlight.transform.eulerAngles.y, 0f);
         // ^ Clamps vertical rotation between two constants. Issue: Currently locks to one constant, doesn't go negative
@@ -188,7 +182,7 @@ public class mainScript : MonoBehaviour
         int minutes = (int)(secs / 60);
         secs %= 60;
 
-        return hour + 6 + ":" + minutes.ToString().PadLeft(2, '0') + 
+        return hour + 6 + ":" + minutes.ToString().PadLeft(2, '0') +
             ':' + secs.ToString().PadLeft(2, '0');
     }
 
@@ -204,12 +198,11 @@ public class mainScript : MonoBehaviour
             else if (col.gameObject.tag == "pianoKey")
             {
                 PlayerState.Keys += 1;
-		        Destroy(col.gameObject);
+                Destroy(col.gameObject);
             }
         }
 
     }
-
 
     void Update()
     {
@@ -232,7 +225,7 @@ public class mainScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M) && CR_mask)
             StartCoroutine(mask(maskOn));
 
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
     }
 

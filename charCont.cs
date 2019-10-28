@@ -6,6 +6,7 @@ public class charCont : MonoBehaviour
 {
 
     //Values
+    public bool debug = false;
     public bool cameraFollow;
     public bool cameraRotate;
     public float walkSpeed = 3;
@@ -19,7 +20,7 @@ public class charCont : MonoBehaviour
     public float smoothness = 10f;
 
     //References
-    private Camera mainCam;
+    public static Camera mainCam;
     private CharacterController cc;
 
     //Vector Creation
@@ -55,6 +56,43 @@ public class charCont : MonoBehaviour
         //mainCam.transform.position = transform.position + offset;
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (!cameraFollow && other.tag == "roomTrigger")
+        {
+            roomClass rc = other.GetComponent<roomClass>();
+            walkDirection = rc.md;
+            EnableCamera(rc.roomCam);
+
+        }
+    }
+
+    void OnGUI() // INFO
+    {
+        if(debug)
+        {
+            string editString =
+            "AIRSTRAFE = " + airStrafing.ToString().ToUpper() +
+            "\nCAM_OFFSET = " + offset +
+            "\nCAM_SMOOTH = " + smoothness +
+            "\nCONST_GRAVITY = " + gravity +
+            "\nMOVE_SPEED = " + walkSpeed +
+            "\nRUN_SPEED = " + runSpeed +
+            "\nPLAYER_ISRUNNING = " + Input.GetKey(KeyCode.LeftShift).ToString().ToUpper() +
+            "\nPLAYER_ISGROUNDED = " + cc.isGrounded.ToString().ToUpper() +
+            "\nMOVE_VECTOR = " + moveDir +
+            "\nTIME = " + PlayerState.Seconds;
+            GUI.skin.textArea.active.background =
+            GUI.skin.textArea.normal.background =
+            GUI.skin.textArea.onHover.background =
+            GUI.skin.textArea.hover.background =
+            GUI.skin.textArea.onFocused.background =
+            GUI.skin.textArea.focused.background = null;
+            GUI.TextArea(new Rect(10, 50, 400, 400), editString);
+        }
+    }
+
+
     void Update()
     {
         float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed; //Sprinting
@@ -83,55 +121,21 @@ public class charCont : MonoBehaviour
         moveDir = new Vector3(mvX, mvY, mvZ);
         cc.Move(moveDir * Time.deltaTime);
 
+    }
 
-        void OnTriggerEnter(Collider other)
+    void LateUpdate() //Camera movement stuff
+    {
+        //Could save this transform as a variable rather than just saying transform
+        //This would let me pass in another object for the camera to target if necessary
+        if (cameraFollow)
         {
-            if (!cameraFollow && other.tag == "roomTrigger")
-            {
-                roomClass rc = other.GetComponent<roomClass>();
-                walkDirection = rc.md;
-                EnableCamera(rc.roomCam);
-
-            }
+            Vector3 toPosition = transform.position + offset;
+            Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
+            mainCam.transform.position = smoothPos;
         }
 
-        void OnGUI() // INFO
-        {
-            string editString =
-                "AIRSTRAFE = " + airStrafing.ToString().ToUpper() +
-                "\nCAM_OFFSET = " + offset +
-                "\nCAM_SMOOTH = " + smoothness +
-                "\nCONST_GRAVITY = " + gravity +
-                "\nMOVE_SPEED = " + walkSpeed +
-                "\nRUN_SPEED = " + runSpeed +
-                "\nPLAYER_ISRUNNING = " + Input.GetKey(KeyCode.LeftShift).ToString().ToUpper() +
-                "\nPLAYER_ISGROUNDED = " + cc.isGrounded.ToString().ToUpper() +
-                "\nMOVE_VECTOR = " + moveDir +
-                "\nTIME = " + PlayerState.Seconds;
-            GUI.skin.textArea.active.background =
-            GUI.skin.textArea.normal.background =
-            GUI.skin.textArea.onHover.background =
-            GUI.skin.textArea.hover.background =
-            GUI.skin.textArea.onFocused.background =
-            GUI.skin.textArea.focused.background = null;
-            GUI.TextArea(new Rect(10, 50, 400, 400), editString);
-
-        }
-
-        void LateUpdate() //Camera movement stuff
-        {
-            //Could save this transform as a variable rather than just saying transform
-            //This would let me pass in another object for the camera to target if necessary
-            if (cameraFollow)
-            {
-                Vector3 toPosition = transform.position + offset;
-                Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
-                mainCam.transform.position = smoothPos;
-            }
-
-            if (cameraRotate) mainCam.transform.LookAt(transform);
-
-        }
+        if (cameraRotate) mainCam.transform.LookAt(transform);
 
     }
+
 }
