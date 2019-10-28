@@ -8,8 +8,8 @@ public class charCont : MonoBehaviour
     //Values
     public bool cameraFollow;
     public bool cameraRotate;
-    public float walkSpeed = .5f;
-    public float runMult = 2;
+    public float walkSpeed = 3;
+    public float runMult = 1.6f;
     public float jumpForce = 8f;
     private float runSpeed;
     const float gravity = 20f;
@@ -52,7 +52,7 @@ public class charCont : MonoBehaviour
         mainCam = Camera.main;
         runSpeed = walkSpeed * runMult;
         cc = GetComponent<CharacterController>();
-        mainCam.transform.position = transform.position + offset;
+        //mainCam.transform.position = transform.position + offset;
     }
 
     void Update()
@@ -60,6 +60,7 @@ public class charCont : MonoBehaviour
         float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed; //Sprinting
 
         if (airStrafing || cc.isGrounded) mvX = mvZ = mvY = 0;
+
         if (Input.GetKeyDown(KeyCode.Space) && cc.isGrounded) mvY = jumpForce; //Jumping
 
         //Movement
@@ -82,10 +83,6 @@ public class charCont : MonoBehaviour
         moveDir = new Vector3(mvX, mvY, mvZ);
         cc.Move(moveDir * Time.deltaTime);
 
-        IEnumerator cameraFadeIn()
-        {
-            yield return new WaitForSeconds(0.1f);
-        }
 
         void OnTriggerEnter(Collider other)
         {

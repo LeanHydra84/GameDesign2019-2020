@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using System.IO;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -94,6 +95,8 @@ public class mainScript : MonoBehaviour
     //Misc
     private Light flashlight;
     public static Camera mainCam;
+    public float timeScale;
+    public Text time;
 
     //Mask
     public bool maskOn;
@@ -106,8 +109,8 @@ public class mainScript : MonoBehaviour
 
     //Array of lights for the mask
     public Light[] lightArray;
-    public Transform flashLightLook;
     public static mainScript instance;
+
     private void Awake()
     {
         instance = this;
@@ -176,6 +179,19 @@ public class mainScript : MonoBehaviour
         // ^ Clamps vertical rotation between two constants. Issue: Currently locks to one constant, doesn't go negative
     }
 
+    string convertTime(int seconds)
+    {
+        float secs = seconds * timeScale;
+        secs %= 24 * 3600;
+        int hour = (int)(secs / 3600);
+        secs %= 3600;
+        int minutes = (int)(secs / 60);
+        secs %= 60;
+
+        return hour + 6 + ":" + minutes.ToString().PadLeft(2, '0') + 
+            ':' + secs.ToString().PadLeft(2, '0');
+    }
+
     void OnTriggerStay(Collider col) //Has to be OnTriggerStay, OnTriggerEnter only gets called once
     {
         if (Input.GetKeyDown(KeyCode.F))
@@ -197,6 +213,8 @@ public class mainScript : MonoBehaviour
 
     void Update()
     {
+        time.text = convertTime(PlayerState.Seconds);
+
         //Lose-Death condition
         if (PlayerState.Health <= 0)
         {
