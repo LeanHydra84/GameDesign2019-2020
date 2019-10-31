@@ -96,6 +96,7 @@ public class mainScript : MonoBehaviour
     private Light flashlight;
     public float timeScale;
     public Text time;
+    public bool showSeconds;
 
     //Mask
     public bool maskOn;
@@ -126,10 +127,11 @@ public class mainScript : MonoBehaviour
         CR_mask = true;
     }
 
+
     IEnumerator mask(bool a)
     {
         CR_mask = false;
-        yield return new WaitForSeconds(0);
+        yield return new WaitForSeconds(0.5f);
 
         if (a)
         {
@@ -182,8 +184,10 @@ public class mainScript : MonoBehaviour
         int minutes = (int)(secs / 60);
         secs %= 60;
 
-        return hour + 6 + ":" + minutes.ToString().PadLeft(2, '0') +
-            ':' + secs.ToString().PadLeft(2, '0');
+        string returnString = hour + 6 + ":" + minutes.ToString().PadLeft(2, '0');
+        if (showSeconds) returnString += ':' + secs.ToString().PadLeft(2, '0');
+
+        return returnString;
     }
 
     void OnTriggerStay(Collider col) //Has to be OnTriggerStay, OnTriggerEnter only gets called once
