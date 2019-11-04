@@ -30,7 +30,7 @@ public class charCont : MonoBehaviour
     float mvZ;
     public Vector3 walkDirection;
     private Camera[] allCams;
-    public bool airStrafing = true;
+    public bool airStrafing = false;
 
 
     void EnableCamera(Camera c)
@@ -56,15 +56,17 @@ public class charCont : MonoBehaviour
         //mainCam.transform.position = transform.position + offset;
     }
 
+    public static void ChangeCamera(roomClass rc) //Allows camera change to be called by any script with the same method
+    {
+		walkDirection = rc.md;
+		EnableCamera(rc.roomCam);
+		Debug.Log(rc.roomName);
+    }
+
     void OnTriggerEnter(Collider other)
     {
-        if (!cameraFollow && other.tag == "roomTrigger")
-        {
-            roomClass rc = other.GetComponent<roomClass>();
-            walkDirection = rc.md;
-            EnableCamera(rc.roomCam);
-
-        }
+		Debug.Log(other.gameObject.name);
+        if (!cameraFollow && other.tag == "roomTrigger") ChangeCamera(other.GetComponent<roomClass>());
     }
 
     void OnGUI() // INFO
