@@ -56,7 +56,7 @@ public class charCont : MonoBehaviour
         //mainCam.transform.position = transform.position + offset;
     }
 
-    public static void ChangeCamera(roomClass rc) //Allows camera change to be called by any script with the same method
+    public void ChangeCamera(roomClass rc) //Allows camera change to be called by any script with the same method
     {
 		walkDirection = rc.md;
 		EnableCamera(rc.roomCam);
@@ -66,7 +66,9 @@ public class charCont : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
 		Debug.Log(other.gameObject.name);
-        if (!cameraFollow && other.tag == "roomTrigger") ChangeCamera(other.GetComponent<roomClass>());
+        //if (!cameraFollow && other.tag == "roomTrigger") ChangeCamera(other.GetComponent<roomClass>());
+        StartCoroutine(lerpCamera(other.GetComponent<roomClass>().roomCam.transform));
+
     }
 
     void OnGUI() // INFO
@@ -94,6 +96,20 @@ public class charCont : MonoBehaviour
         }
     }
 
+    IEnumerator lerpCamera(Transform t)
+    {
+        Debug.Log("running");
+        float startTime = Time.time;
+        float journeyDistance = Vector3.Distance(t.position, transform.position);
+        float speed = .1f;
+
+        while(Time.time - startTime < 2f)
+        {
+            Debug.Log("In progress");
+            mainCam.transform.rotation = Quaternion.Lerp(mainCam.transform.rotation, t.rotation, (Time.time - startTime) * speed);
+            yield return 0;
+        }
+    }
 
     void Update()
     {
