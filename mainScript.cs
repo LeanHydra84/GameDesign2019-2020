@@ -18,6 +18,7 @@ public static class PlayerState
 
     static int keys;
     static int health;
+	static float time;
     static int seconds;
     static bool canLose;
 
@@ -25,7 +26,8 @@ public static class PlayerState
     {
         keys = 0;
         health = 4;
-        seconds = 0;
+        time = 0f;
+		seconds = 0;
         canLose = true;
     }
 
@@ -48,24 +50,31 @@ public static class PlayerState
         set { if (value > keys || value == 0) keys = value; }
     }
 
-    public static int Seconds
+    public static float Time
     {
-        get { return seconds; }
-        set { if (value > seconds) seconds = value; }
+        get { return time; }
+        set 
+		{ 
+			if (value > time) time = value; 
+			seconds = (int)time;
+		}
     }
     
+	public static int Seconds { get; }
+	
     public static void Load() 
     {
 		health = transDat.health;
 		keys = transDat.keys;
-		seconds = transDat.seconds;
+		time = transDat.time;
+		seconds = (int)time;
     }
 	
 	public static void Save()
 	{
 		transDat.keys = keys;
 		transDat.health = health;
-		transDat.seconds = seconds;
+		transDat.time = time;
 		
 		transDat.x = instance.x;
 		transDat.y = instance.y;
