@@ -12,6 +12,7 @@ public static class transDat
 {
 	static transDat() 
 	{
+		time = 0;
 		keys = 0;
 		health = 4;
 		x = 0;
@@ -21,7 +22,7 @@ public static class transDat
 	
 	static int keys;
 	static float health;
-	static int seconds;
+	static float time;
 	
 	static float x;
 	static float y;
@@ -51,7 +52,7 @@ public class menu : MonoBehaviour
 				
 				transDat.keys = saveObj.keys
 				transDat.health = saveObj.health;
-				transDat.seconds = saveObj.seconds;
+				transDat.time = saveObj.time;
 				transDat.x = saveObj.x;
 				transDat.y = saveObj.y;
 				transDat.z = saveObj.z;
