@@ -8,30 +8,20 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 
 [Serializable]
-public static class transDat
+public class transDat
 {
-	static transDat() 
-	{
-		time = 0;
-		keys = 0;
-		health = 4;
-		x = 0;
-		y = 0;
-		z = 0;
-	}
+	public int keys;
+	public int health;
+	public float time;
 	
-	static int keys;
-	static float health;
-	static float time;
-	
-	static float x;
-	static float y;
-	static float z;
+	public float x;
+    public float y;
+    public float z;
 }
 
 public class menu : MonoBehaviour 
 {
-	static bool newGame;
+	public static bool newGame;
 	BinaryFormatter formatter = new BinaryFormatter();
 	
 	void OnGUI() 
@@ -39,7 +29,7 @@ public class menu : MonoBehaviour
 		if(GUI.Button(new Rect(100, 100, 100, 100), "New Game"))
 		{
 			newGame = true;
-			SceneManager.LoadScene("main");
+			SceneManager.LoadScene("Alright");
 		}
 		
 		if(File.Exists(Application.persistentDataPath + "//save.txt"))
@@ -49,16 +39,10 @@ public class menu : MonoBehaviour
 				newGame = false;
 				Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Open, FileAccess.Read);
 				var saveObj = formatter.Deserialize(stream);
-				
-				transDat.keys = saveObj.keys
-				transDat.health = saveObj.health;
-				transDat.time = saveObj.time;
-				transDat.x = saveObj.x;
-				transDat.y = saveObj.y;
-				transDat.z = saveObj.z;
+                transDat trans = (transDat)saveObj;
 				stream.Close();
 				
-				SceneManager.LoadScene("main");
+				SceneManager.LoadScene("Alright");
 			}
 		}
 		

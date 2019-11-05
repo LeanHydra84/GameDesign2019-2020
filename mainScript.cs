@@ -22,6 +22,10 @@ public static class PlayerState
     static int seconds;
     static bool canLose;
 
+    public static float x;
+    public static float y;
+    public static float z;
+
     static PlayerState()
     {
         keys = 0;
@@ -54,35 +58,49 @@ public static class PlayerState
     {
         get { return time; }
         set 
-		{ 
-			if (value > time) time = value; 
-			seconds = (int)time;
+		{
+            Debug.Log(time);
+            seconds = (int)time;
+            if (value > time) time = value;
 		}
     }
     
-	public static int Seconds { get; }
+	public static int Seconds { get { return seconds; } }
 	
-    public static void Load() 
+    public static void Load()
     {
-		health = transDat.health;
-		keys = transDat.keys;
-		time = transDat.time;
+        BinaryFormatter formatter = new BinaryFormatter();
+        Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Open, FileAccess.Read);
+        var saveObj = formatter.Deserialize(stream);
+        stream.Close();
+        transDat trans = (transDat)saveObj;
+
+        health = trans.health;
+		keys = trans.keys;
+		time = trans.time;
 		seconds = (int)time;
+
+        x = trans.x;
+        y = trans.y;
+        y = trans.z;
     }
 	
 	public static void Save()
 	{
-		transDat.keys = keys;
-		transDat.health = health;
-		transDat.time = time;
-		
-		transDat.x = instance.x;
-		transDat.y = instance.y;
-		transDat.z = instance.z;
-		
-		BinaryFormatter formatter = new BinaryFormatter();
+        transDat trans = new transDat
+        {
+            keys = keys,
+            health = health,
+            time = time,
+
+            x = mainScript.instance.transform.position.x,
+            y = mainScript.instance.transform.position.y,
+            z = mainScript.instance.transform.position.z
+        };
+
+        BinaryFormatter formatter = new BinaryFormatter();
         Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Create, FileAccess.Write);
-		formatter.Serialize(stream, transDat);
+        formatter.Serialize(stream, trans);
 		stream.Close();
 	}
 
@@ -115,7 +133,7 @@ public class mainScript : MonoBehaviour
 		if(!menu.newGame) 
 		{
 			PlayerState.Load();
-			transform.position = new Vector3(transDat.x, transDat.y, transDat.z);
+            transform.position = new Vector3(PlayerState.x, PlayerState.y, PlayerState.z);
 		}		
     }
 
@@ -214,7 +232,7 @@ public class mainScript : MonoBehaviour
 
     void Update()
     {
-    	PlayerState.Seconds = (int)(PlayerState.Time + Time.deltaTime);
+    	PlayerState.Time = PlayerState.Time + Time.deltaTime;
         time.text = convertTime(PlayerState.Seconds);
 
         //Lose-Death condition
@@ -234,7 +252,7 @@ public class mainScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M) && CR_mask)
             StartCoroutine(mask(maskOn));
 
-        if (Input.GetKeyDown(KeyCode.Escape)
+        if (Input.GetKeyDown(KeyCode.Escape))
 		{
 			PlayerState.Save();
            		Application.Quit();

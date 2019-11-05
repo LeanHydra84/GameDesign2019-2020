@@ -33,6 +33,8 @@ public class charCont : MonoBehaviour
     private Camera[] allCams;
     public bool airStrafing = false;
 
+    private Collider c1;
+
 
     void EnableCamera(Camera c)
     {
@@ -67,9 +69,11 @@ public class charCont : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
 		Debug.Log(other.gameObject.name);
-        //if (!cameraFollow && other.tag == "roomTrigger") ChangeCamera(other.GetComponent<roomClass>());
-        StartCoroutine(lerpCamera(other.GetComponent<roomClass>().roomCam.transform));
-
+        if(other == c1) 
+        {
+            StartCoroutine(lerpCamera(other.GetComponent<roomClass>().roomCam.transform));
+            c1 = other;
+        }
     }
 
     void OnGUI() // INFO
