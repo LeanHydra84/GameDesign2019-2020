@@ -86,6 +86,29 @@ public static class PlayerState
         get { return seconds; }
         set { if (value > seconds) seconds = value; }
     }
+    
+    public static void Load() 
+    {
+		health = transDat.health;
+		keys = transDat.keys;
+		seconds = transDat.seconds;
+    }
+	
+	public static void Save()
+	{
+		transDat.keys = keys;
+		transDat.health = health;
+		transDat.seconds = seconds;
+		
+		transDat.x = instance.x;
+		transDat.y = instance.y;
+		transDat.z = instance.z;
+		
+		BinaryFormatter formatter = new BinaryFormatter();
+        Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Create, FileAccess.Write);
+		formatter.Serialize(stream, transDat);
+		stream.Close();
+	}
 
 }
 
@@ -109,10 +132,15 @@ public class mainScript : MonoBehaviour
     //Array of lights for the mask
     public Light[] lightArray;
     public static mainScript instance;
-
+	
     private void Awake()
     {
         instance = this;
+		if(!menu.newGame) 
+		{
+			PlayerState.Load();
+			transform.position = new Vector3(transDat.x, transDat.y, transDat.z);
+		}		
     }
 
     void Start()
@@ -229,8 +257,11 @@ public class mainScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M) && CR_mask)
             StartCoroutine(mask(maskOn));
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape)
+		{
+			PlayerState.Save();
             Application.Quit();
+		}
     }
 
     private void FixedUpdate()
