@@ -7,39 +7,6 @@ using System.IO;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 
-/*
-To do:
-Picking up piano keys
-Death scenario
-Creating saves - serializable save class (saved to Application.persistentDataPath)
-Bullet hell boss fights
-Room randomization
-Character aiming at MOUSE only when in battlemode
-//This bitch is NOT READY
-public class saveData
-{
-
-    public void Load()
-    {
-        //Gets values from file
-        Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Open, FileAccess.Read);
-
-    }
-
-    public void Save()
-    {
-        //Saves values to file
-        BinaryFormatter formatter = new BinaryFormatter();
-        Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Create, FileAccess.Write);
-
-        //formatter.Serialize(stream, ); //Maybe make a new serializable class that I can format?
-        stream.Close();
-    }
-
-}
-*/
-
-//QUESTION: CAN I JUST SERIALIZE PlayerState??? -- Probably not
 public static class PlayerState
 {
     static IEnumerator healthDelay()
