@@ -214,6 +214,7 @@ public class mainScript : MonoBehaviour
 
     void Update()
     {
+    	PlayerState.Seconds = (int)(PlayerState.Time + Time.deltaTime);
         time.text = convertTime(PlayerState.Seconds);
 
         //Lose-Death condition
@@ -236,13 +237,8 @@ public class mainScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)
 		{
 			PlayerState.Save();
-            Application.Quit();
+           		Application.Quit();
 		}
-    }
-
-    private void FixedUpdate()
-    {
-        PlayerState.Seconds = (int)(PlayerState.Time + Time.deltaTime);
     }
 
 }
