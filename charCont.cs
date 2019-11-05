@@ -14,6 +14,7 @@ public class charCont : MonoBehaviour
     public float jumpForce = 8f;
     private float runSpeed;
     const float gravity = 20f;
+    private bool canMoveOnTransition;
 
     //Camera Values
     public Vector3 offset; //Math will be needed to fix the offset when the camera turns into rooms
@@ -98,17 +99,19 @@ public class charCont : MonoBehaviour
 
     IEnumerator lerpCamera(Transform t)
     {
-        Debug.Log("running");
         float startTime = Time.time;
         float journeyDistance = Vector3.Distance(t.position, transform.position);
         float speed = .1f;
-
+		canMoveOnTransition = false;
+	
         while(Time.time - startTime < 2f)
         {
-            Debug.Log("In progress");
             mainCam.transform.rotation = Quaternion.Lerp(mainCam.transform.rotation, t.rotation, (Time.time - startTime) * speed);
+	    	mainCam.transform.position = Vector3.Lerp(mainCam.transform.position, t.position, (Time.time - startTime * speed));
             yield return 0;
         }
+		yield return new WaitForSeconds(0.5f);
+		canMoveOnTransition = true;
     }
 
     void Update()
@@ -124,7 +127,7 @@ public class charCont : MonoBehaviour
         float zSpeed = walkDirection.z * speed;
         float xSpeed = walkDirection.x * speed;
 
-        if (cc.isGrounded || airStrafing)
+        if ((cc.isGrounded || airStrafing) && canMoveOnTransition)
         {
             if (Input.GetKey(KeyCode.W)) mvZ -= zSpeed; //Forwards
             if (Input.GetKey(KeyCode.S)) mvZ += zSpeed; //Back
