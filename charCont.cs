@@ -68,8 +68,8 @@ public class charCont : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-		Debug.Log(other.gameObject.name);
-        if(other == c1) 
+	Debug.Log(other.gameObject.name);
+        if(other != c1) 
         {
             StartCoroutine(lerpCamera(other.GetComponent<roomClass>().roomCam.transform));
             c1 = other;
