@@ -266,7 +266,7 @@ public class mainScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        PlayerState.Seconds = (int)Time.time;
+        PlayerState.Seconds = (int)(PlayerState.Time + Time.deltaTime);
     }
 
 }
