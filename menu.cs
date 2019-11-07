@@ -23,8 +23,13 @@ public class menu : MonoBehaviour
 {
 	public static bool newGame;
 	BinaryFormatter formatter = new BinaryFormatter();
-	
-	void OnGUI() 
+
+    private void Start()
+    {
+        Debug.Log(Application.persistentDataPath);
+    }
+
+    void OnGUI() 
 	{
 		if(GUI.Button(new Rect(100, 100, 100, 100), "New Game"))
 		{
@@ -45,6 +50,16 @@ public class menu : MonoBehaviour
 				SceneManager.LoadScene("Alright");
 			}
 		}
-		
-	}
+
+        if (File.Exists(Application.persistentDataPath + "//save.txt"))
+        {
+            if(GUI.Button(new Rect(100,300,100,100), "Delete Save"))
+            {
+                File.Delete(Application.persistentDataPath + "//save.txt");
+            }
+        }
+
+
+
+    }
 }
