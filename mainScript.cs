@@ -71,7 +71,7 @@ public static class PlayerState
     {
         BinaryFormatter formatter = new BinaryFormatter();
         Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Open, FileAccess.Read);
-        var saveObj = formatter.Deserialize(stream);
+        object saveObj = formatter.Deserialize(stream);
         stream.Close();
         transDat trans = (transDat)saveObj;
 
@@ -133,7 +133,7 @@ public class mainScript : MonoBehaviour
 		if(!menu.newGame) 
 		{
 			PlayerState.Load();
-            transform.position = new Vector3(PlayerState.x, PlayerState.y, PlayerState.z);
+            transform.position = new Vector3(PlayerState.x, PlayerState.y + 1, PlayerState.z);
 		}		
     }
 

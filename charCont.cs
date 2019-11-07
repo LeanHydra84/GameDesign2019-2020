@@ -68,9 +68,10 @@ public class charCont : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-	Debug.Log(other.gameObject.name);
+	    Debug.Log(other.gameObject.name);
         if(other != c1) 
         {
+            walkDirection = other.gameObject.GetComponent<roomClass>().md;
             StartCoroutine(lerpCamera(other.GetComponent<roomClass>().roomCam.transform));
             c1 = other;
         }
