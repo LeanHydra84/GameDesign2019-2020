@@ -59,7 +59,6 @@ public static class PlayerState
         get { return time; }
         set 
 		{
-            Debug.Log(time);
             seconds = (int)time;
             if (value > time) time = value;
 		}
