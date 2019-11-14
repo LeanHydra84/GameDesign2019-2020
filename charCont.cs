@@ -56,6 +56,7 @@ public class charCont : MonoBehaviour
         mainCam = Camera.main;
         runSpeed = walkSpeed * runMult;
         cc = GetComponent<CharacterController>();
+        walkDirection = new Vector3(1, 0, 1);
         //mainCam.transform.position = transform.position + offset;
     }
 
@@ -113,13 +114,14 @@ public class charCont : MonoBehaviour
         float startTime = Time.time;
         float journeyDistance = Vector3.Distance(t.position, transform.position);
         float speed = .1f;
+
 		if(Time.time > 1f) canMoveOnTransition = false;
-	
+
         while(Time.time - startTime < 2f)
         {
             mainCam.transform.rotation = Quaternion.Lerp(mainCam.transform.rotation, t.rotation, (Time.time - startTime) * speed);
 	    	mainCam.transform.position = Vector3.Lerp(mainCam.transform.position, t.position, (Time.time - startTime) * speed);
-            if (Time.time - startTime > 1f) canMoveOnTransition = true;
+
             yield return 0;
         }
 		//yield return new WaitForSeconds(0.5f);

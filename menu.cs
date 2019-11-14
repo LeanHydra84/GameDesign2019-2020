@@ -22,12 +22,18 @@ public class transDat
 
 public class menu : MonoBehaviour 
 {
-	public static bool newGame;
-	BinaryFormatter formatter = new BinaryFormatter();
 
     static menu()
     {
         newGame = true;
+    }
+
+	public static bool newGame;
+
+    public void ContinueGame()
+    {
+        newGame = false;
+        SceneManager.LoadScene("Alright");
     }
 
     private void Start()
@@ -47,13 +53,7 @@ public class menu : MonoBehaviour
 		{
 			if(GUI.Button(new Rect(100, 200, 100, 100), "Continue")) 
 			{
-				newGame = false;
-				Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Open, FileAccess.Read);
-				var saveObj = formatter.Deserialize(stream);
-                transDat trans = (transDat)saveObj;
-				stream.Close();
-				
-				SceneManager.LoadScene("Alright");
+                ContinueGame();
 			}
 		}
 
@@ -64,7 +64,6 @@ public class menu : MonoBehaviour
                 File.Delete(Application.persistentDataPath + "//save.txt");
             }
         }
-
 
 
     }
