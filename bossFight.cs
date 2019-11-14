@@ -2,25 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Text.RegularExpressions;
 
 public class bossFight : MonoBehaviour
 {
     public float BPM;
     private bool isPlaying;
-    StreamReader file;
     private Transform player;
     private float smoothness = 10;
     private Vector3 targetPos;
     private Quaternion smoothedRot;
     public Rigidbody projectile;
-    public StreamReader str;
     public Transform fire;
+    string[] lines;
 
     void Start()
     {
-        string path = @"";
+        var patt = Resources.Load<TextAsset>(@"Songs/test");
         isPlaying = true;
-        file = new StreamReader(path);
+        lines = Regex.Split(patt.text, "\n|\r|\r\n");
         player = GameObject.FindWithTag("Player").transform;
         StartCoroutine(IterateFile());
     }
@@ -32,16 +32,15 @@ public class bossFight : MonoBehaviour
 
     IEnumerator IterateFile()
     {
-        BPM = float.Parse(file.ReadLine());
+        BPM = float.Parse(lines[0]);
         float multiplier = 1/(BPM / 60);
         Debug.Log("BPM: " + BPM);
-        string line;
         while(isPlaying)
         {
-            while ((line = file.ReadLine()) != null)
+            for(int i=1; i < lines.Length; i++)
             {
-                Debug.Log(line);
-                if (line == "-")
+                Debug.Log(lines[i]);
+                if (lines[i] == "-")
                 {
                     Rigidbody proj = Instantiate(projectile, fire.position, transform.rotation);
                     proj.transform.rotation = smoothedRot;
@@ -51,19 +50,14 @@ public class bossFight : MonoBehaviour
                 }
                 else
                 {
-                    float waitBeats = float.Parse(line);
+                    float waitBeats = float.Parse(lines[i]);
                     waitBeats *= multiplier;
                     yield return new WaitForSeconds(waitBeats);
                 }
 
             }
 
-            file.DiscardBufferedData();
-            file.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
-            file.ReadLine();
         }
-        
-        file.Close();
     }
 
     void LateUpdate()
