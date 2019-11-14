@@ -69,7 +69,7 @@ public class charCont : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-	    Debug.Log(other.gameObject.name);
+	    //Debug.Log(other.gameObject.name);
         if(other.tag == "triggerRoom" && other != c1) 
         {
             if (Time.time > 1f && c1.GetComponent<roomClass>().isHallway)

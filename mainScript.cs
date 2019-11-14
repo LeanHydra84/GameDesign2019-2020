@@ -236,7 +236,7 @@ public class mainScript : MonoBehaviour
     void Update()
     {
     	PlayerState.Time = PlayerState.Time + Time.deltaTime;
-        time.text = convertTime(PlayerState.Seconds);
+        if(time != null) time.text = convertTime(PlayerState.Seconds);
 
         //Lose-Death condition
         if (PlayerState.Health <= 0)
