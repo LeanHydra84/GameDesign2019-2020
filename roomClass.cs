@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class roomClass : MonoBehaviour
 {
+    public bool isHallway;
     public string roomName = "";
-    public Camera roomCam;
-    public Vector3 md;
+    public Transform roomCam;
+    public Vector4 md;
 }

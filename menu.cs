@@ -13,7 +13,8 @@ public class transDat
 	public int keys;
 	public int health;
 	public float time;
-	
+
+    public float[] HoldPosition = new float[2];
 	public float x;
     public float y;
     public float z;

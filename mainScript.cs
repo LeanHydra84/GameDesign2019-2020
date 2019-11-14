@@ -22,12 +22,14 @@ public static class PlayerState
     static int seconds;
     static bool canLose;
 
+    public static float[] position;
     public static float x;
     public static float y;
     public static float z;
 
     static PlayerState()
     {
+        position = new float[2];
         keys = 0;
         health = 4;
         time = 0f;
@@ -79,9 +81,10 @@ public static class PlayerState
 		time = trans.time;
 		seconds = (int)time;
 
-        x = trans.x;
-        y = trans.y;
-        y = trans.z;
+        for (int i = 0; i < 3; i++)
+        {
+            position[i] = trans.HoldPosition[i];
+        }
     }
 	
 	public static void Save()
@@ -92,10 +95,11 @@ public static class PlayerState
             health = health,
             time = time,
 
-            x = mainScript.instance.transform.position.x,
+            //HoldPosition = {mainScript.instance.transform.position.y,  }, Why can't I assign to an array in here
             y = mainScript.instance.transform.position.y,
             z = mainScript.instance.transform.position.z
         };
+        trans.HoldPosition[0] = mainScript.instance.transform.position.x; //But here works? 
 
         BinaryFormatter formatter = new BinaryFormatter();
         Stream stream = new FileStream(Application.persistentDataPath + "//save.txt", FileMode.Create, FileAccess.Write);
@@ -232,7 +236,7 @@ public class mainScript : MonoBehaviour
     void Update()
     {
     	PlayerState.Time = PlayerState.Time + Time.deltaTime;
-        time.text = convertTime(PlayerState.Seconds);
+        if(time != null) time.text = convertTime(PlayerState.Seconds);
 
         //Lose-Death condition
         if (PlayerState.Health <= 0)

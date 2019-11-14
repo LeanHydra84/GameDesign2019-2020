@@ -6,13 +6,10 @@ public class projectileScript : MonoBehaviour
 {
     float beginTime;
     public int damage;
-    Rigidbody rb;
 
     private void Start()
     {
         beginTime = Time.time;
-        rb = GetComponent<Rigidbody>();
-
     }
 
     private void Update()
@@ -21,9 +18,10 @@ public class projectileScript : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
     }
 
-    private void OnCollisionExit(Collision col)
+    private void OnCollisionEnter(Collision col)
     {
         if (col.collider.gameObject.tag == "Player")
         {
@@ -32,5 +30,4 @@ public class projectileScript : MonoBehaviour
         if(col.gameObject.tag != "boss")
             Destroy(gameObject);
     }
-
 }
