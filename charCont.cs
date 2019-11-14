@@ -8,7 +8,6 @@ public class charCont : MonoBehaviour
     //Values
     public bool debug = false;
     public bool cameraFollow;
-    public bool cameraRotate;
     public float walkSpeed = 3;
     public float runMult = 1.6f;
     public float jumpForce = 8f;
@@ -22,6 +21,7 @@ public class charCont : MonoBehaviour
 
     //References
     public static Camera mainCam;
+    private Camera moveableCamera;
     private CharacterController cc;
 
     //Vector Creation
@@ -29,12 +29,11 @@ public class charCont : MonoBehaviour
     float mvY;
     float mvX;
     float mvZ;
-    public Vector3 walkDirection;
+    public Vector4 walkDirection;
     private Camera[] allCams;
     public bool airStrafing = false;
 
     private Collider c1;
-
 
     void EnableCamera(Camera c)
     {
@@ -53,6 +52,7 @@ public class charCont : MonoBehaviour
 
     void Start()
     {
+        canMoveOnTransition = true;
         mainCam = Camera.main;
         runSpeed = walkSpeed * runMult;
         cc = GetComponent<CharacterController>();
@@ -62,17 +62,23 @@ public class charCont : MonoBehaviour
     public void ChangeCamera(roomClass rc) //Allows camera change to be called by any script with the same method
     {
 		walkDirection = rc.md;
-		EnableCamera(rc.roomCam);
+		//EnableCamera(rc.roomCam);
 		Debug.Log(rc.roomName);
     }
 
     void OnTriggerEnter(Collider other)
     {
 	    Debug.Log(other.gameObject.name);
-        if(other != c1) 
+        if(other.tag == "triggerRoom" && other != c1) 
         {
-            walkDirection = other.gameObject.GetComponent<roomClass>().md;
-            StartCoroutine(lerpCamera(other.GetComponent<roomClass>().roomCam.transform));
+            if (Time.time > 1f && c1.GetComponent<roomClass>().isHallway)
+            {
+                EnableCamera(mainCam);
+                mainCam.transform.position = c1.GetComponent<roomClass>().roomCam.transform.position;
+            }
+            roomClass rc = other.gameObject.GetComponent<roomClass>();
+            walkDirection = rc.md;
+            StartCoroutine(lerpCamera(rc.roomCam.transform, rc.isHallway));
             c1 = other;
         }
     }
@@ -102,23 +108,30 @@ public class charCont : MonoBehaviour
         }
     }
 
-    IEnumerator lerpCamera(Transform t)
+    IEnumerator lerpCamera(Transform t, bool isHall)
     {
         float startTime = Time.time;
         float journeyDistance = Vector3.Distance(t.position, transform.position);
         float speed = .1f;
-		canMoveOnTransition = false;
+		if(Time.time > 1f) canMoveOnTransition = false;
 	
         while(Time.time - startTime < 2f)
         {
             mainCam.transform.rotation = Quaternion.Lerp(mainCam.transform.rotation, t.rotation, (Time.time - startTime) * speed);
-	    	mainCam.transform.position = Vector3.Lerp(mainCam.transform.position, t.position, (Time.time - startTime * speed));
+	    	mainCam.transform.position = Vector3.Lerp(mainCam.transform.position, t.position, (Time.time - startTime) * speed);
+            if (Time.time - startTime > 1f) canMoveOnTransition = true;
             yield return 0;
         }
-		yield return new WaitForSeconds(0.5f);
+		//yield return new WaitForSeconds(0.5f);
 		canMoveOnTransition = true;
+        if (isHall)
+        {
+            moveableCamera = t.GetComponent<Camera>();
+            EnableCamera(moveableCamera);
+            cameraFollow = true;
+        }
     }
-
+    
     void Update()
     {
         float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed; //Sprinting
@@ -144,7 +157,8 @@ public class charCont : MonoBehaviour
         mvY -= gravity * Time.deltaTime;
 
         //Making the move
-        moveDir = new Vector3(mvX, mvY, mvZ);
+        if (walkDirection.w == 0) moveDir = new Vector3(mvX, mvY, mvZ);
+        else moveDir = new Vector3(mvZ, mvY, mvX);
         cc.Move(moveDir * Time.deltaTime);
 
     }
@@ -157,11 +171,9 @@ public class charCont : MonoBehaviour
         {
             Vector3 toPosition = transform.position + offset;
             Vector3 smoothPos = Vector3.Lerp(mainCam.transform.position, toPosition, smoothness * Time.deltaTime);
-            mainCam.transform.position = smoothPos;
+            moveableCamera.transform.position = smoothPos;
+            moveableCamera.transform.LookAt(transform);
         }
-
-        if (cameraRotate) mainCam.transform.LookAt(transform);
-
     }
 
 }

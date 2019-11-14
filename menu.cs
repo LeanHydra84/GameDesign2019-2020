@@ -13,7 +13,8 @@ public class transDat
 	public int keys;
 	public int health;
 	public float time;
-	
+
+    public float[] HoldPosition = new float[2];
 	public float x;
     public float y;
     public float z;
@@ -23,6 +24,11 @@ public class menu : MonoBehaviour
 {
 	public static bool newGame;
 	BinaryFormatter formatter = new BinaryFormatter();
+
+    static menu()
+    {
+        newGame = true;
+    }
 
     private void Start()
     {
