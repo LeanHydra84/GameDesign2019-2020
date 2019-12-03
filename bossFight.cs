@@ -24,10 +24,12 @@ public class bossFight : MonoBehaviour
     private Quaternion smoothedRot;
     public Rigidbody projE;
     public static Rigidbody projectile;
-    public Transform fire;
+    public Transform firePoint;
     string[] lines;
     public static int[] anglesX;
     int[] SG_angles = new[] { 0, 15, -15 };
+
+    static int fire_speed;
 
     void Start()
     {
@@ -39,6 +41,7 @@ public class bossFight : MonoBehaviour
         player = GameObject.FindWithTag("Player").transform;
         StartCoroutine(IterateFile());
         anglesX = GetAngles();
+        fire_speed = 20;
     }
 
     int[] GetAngles()
@@ -68,7 +71,7 @@ public class bossFight : MonoBehaviour
             adjustedRot = startingRot * Quaternion.Euler(Vector3.up * anglesX[i]);
             shotProj.transform.rotation = adjustedRot;
             shotProj.GetComponent<projectileScript>().damage = 1;
-            shotProj.AddForce(shotProj.transform.forward * 15, ForceMode.Impulse);
+            shotProj.AddForce(shotProj.transform.forward * fire_speed, ForceMode.Impulse);
         }
     }
 
@@ -81,7 +84,7 @@ public class bossFight : MonoBehaviour
         ps.isShrap = shrap;
         ps.bounceCount = bc;
         ps.pickupAble = pickup;
-        proj.AddForce(transform.forward * 30, ForceMode.Impulse);
+        proj.AddForce(transform.forward * fire_speed, ForceMode.Impulse);
     }
 
     void ShotgunAttack()
@@ -89,11 +92,11 @@ public class bossFight : MonoBehaviour
         Quaternion adjustedRot = new Quaternion();
         for (int i = 0; i < 3; i++)
         {
-            Rigidbody shotProj = Instantiate(projectile, fire.position, transform.rotation);
+            Rigidbody shotProj = Instantiate(projectile, firePoint.position, transform.rotation);
             adjustedRot = smoothedRot * Quaternion.Euler(Vector3.up * SG_angles[i]);
             shotProj.transform.rotation = adjustedRot;
             shotProj.GetComponent<projectileScript>().damage = 1;
-            shotProj.AddForce(shotProj.transform.forward * 30, ForceMode.Impulse);
+            shotProj.AddForce(shotProj.transform.forward * fire_speed, ForceMode.Impulse);
         }
     }
 
@@ -118,7 +121,7 @@ public class bossFight : MonoBehaviour
                     switch (lines[i])
                     {
                         case "=":
-                            SingleAttack(fire, false, false, 0);
+                            SingleAttack(firePoint, false, false, 0);
                             break;
                         case "+":
                             ShotgunAttack();
@@ -127,13 +130,13 @@ public class bossFight : MonoBehaviour
                             RingAttack(transform, 1, smoothedRot);
                             break;
                         case "$":
-                            SingleAttack(fire, true, false, 0);
+                            SingleAttack(firePoint, true, false, 0);
                             break;
                         case "!":
-                            SingleAttack(fire, false, false, 1);
+                            SingleAttack(firePoint, false, false, 1);
                             break;
                         case "@":
-                            SingleAttack(fire, false, true, 0);
+                            SingleAttack(firePoint, false, true, 0);
                             break;
                         default:
                             Debug.Log($"Error at line {i}: Illegal input {lines[i]}.");

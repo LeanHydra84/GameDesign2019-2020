@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2235823601056552868}
   - component: {fileID: 2235823601056552869}
   - component: {fileID: 2235823601056552864}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: ProjTEST
   m_TagString: boss
   m_Icon: {fileID: 0}
@@ -68,7 +68,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
