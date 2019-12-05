@@ -27,7 +27,19 @@ public class bossFight : MonoBehaviour
     public Transform firePoint;
     string[] lines;
     public static int[] anglesX;
-    int[] SG_angles = new[] { 0, 15, -15 };
+    private int[] SG_angles = { 0, 15, -15 };
+
+    public static Dictionary<string, Sprite> spriteNames = new Dictionary<string, Sprite>();
+
+    void Awake()
+    {
+        Object[] textures = Resources.LoadAll("BULLETS", typeof(Sprite));
+
+        foreach (Object a in textures)
+        {
+            spriteNames.Add(a.name, (Sprite)a);
+        }
+    }
 
     static int fire_speed;
 
@@ -41,7 +53,12 @@ public class bossFight : MonoBehaviour
         player = GameObject.FindWithTag("Player").transform;
         StartCoroutine(IterateFile());
         anglesX = GetAngles();
-        fire_speed = 20;
+        fire_speed = 5;
+    }
+
+    Texture2D pf(string s)
+    {
+        return (Texture2D)Resources.Load(@"BULLETS/" + s);
     }
 
     int[] GetAngles()
@@ -70,7 +87,10 @@ public class bossFight : MonoBehaviour
             Rigidbody shotProj = Instantiate(projectile, t.position, startingRot);
             adjustedRot = startingRot * Quaternion.Euler(Vector3.up * anglesX[i]);
             shotProj.transform.rotation = adjustedRot;
-            shotProj.GetComponent<projectileScript>().damage = 1;
+            projectileScript ps = shotProj.GetComponent<projectileScript>();
+            ps.damage = 1;
+            spriteNames.TryGetValue("RedSingle", out ps.startingTexture);
+            //ps.startingTexture = value;
             shotProj.AddForce(shotProj.transform.forward * fire_speed, ForceMode.Impulse);
         }
     }
@@ -95,8 +115,12 @@ public class bossFight : MonoBehaviour
             Rigidbody shotProj = Instantiate(projectile, firePoint.position, transform.rotation);
             adjustedRot = smoothedRot * Quaternion.Euler(Vector3.up * SG_angles[i]);
             shotProj.transform.rotation = adjustedRot;
-            shotProj.GetComponent<projectileScript>().damage = 1;
+            projectileScript ps = shotProj.GetComponent<projectileScript>();
+            ps.damage = 1;
+            spriteNames.TryGetValue("GreenTriple", out ps.startingTexture);
             shotProj.AddForce(shotProj.transform.forward * fire_speed, ForceMode.Impulse);
+
+
         }
     }
 
