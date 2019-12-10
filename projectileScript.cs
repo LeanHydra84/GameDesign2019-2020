@@ -9,23 +9,35 @@ public class projectileScript : MonoBehaviour
     public int bounceCount = 0;
     public bool isShrap;
     public bool pickupAble;
-
-    public Sprite startingTexture;
     private SpriteRenderer itsAbigBattle;
+    private Sprite startingTexture;
+    Camera mc;
+
+    public Sprite StartingTexture
+    {
+        get { return startingTexture; } 
+        set 
+        {
+            if(itsAbigBattle == null) itsAbigBattle = transform.GetChild(0).GetComponent<SpriteRenderer>();
+            startingTexture = value;
+            itsAbigBattle.sprite = startingTexture;
+        }
+    }
+
+
 
 
 
     private void Start()
     {
-        itsAbigBattle = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        mc = Camera.main;
         beginTime = Time.time;
-        if (startingTexture != null) itsAbigBattle.sprite = startingTexture;
     }
 
     private void Update()
     {
-        itsAbigBattle.transform.LookAt(Camera.main.transform);
-        if (Time.time - beginTime > 2.5f)
+        itsAbigBattle.transform.LookAt(mc.transform);
+        if (Time.time - beginTime > 6f)
         {
             Destroy(gameObject);
         }
@@ -44,10 +56,15 @@ public class projectileScript : MonoBehaviour
         {
             bossFight.RingAttack(transform, 2, transform.rotation);
         }
-            
+
 
         if (bounceCount == 0 && Time.time - beginTime > 0.1f)
             Destroy(gameObject);
-        else bounceCount--;
+        else if(bounceCount > 0)
+        {
+            bossFight.spriteNames.TryGetValue("Bounce" + bounceCount, out Sprite tempSprite);
+            StartingTexture = tempSprite;
+            bounceCount--; 
+        }
     }
 }

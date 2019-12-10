@@ -27,7 +27,7 @@ public class bossFight : MonoBehaviour
     public Transform firePoint;
     string[] lines;
     public static int[] anglesX;
-    private int[] SG_angles = { 0, 15, -15 };
+    private readonly int[] SG_angles = { 0, 15, -15 };
 
     public static Dictionary<string, Sprite> spriteNames = new Dictionary<string, Sprite>();
 
@@ -53,7 +53,7 @@ public class bossFight : MonoBehaviour
         player = GameObject.FindWithTag("Player").transform;
         StartCoroutine(IterateFile());
         anglesX = GetAngles();
-        fire_speed = 5;
+        fire_speed = 100;
     }
 
     Texture2D pf(string s)
@@ -81,7 +81,7 @@ public class bossFight : MonoBehaviour
 
     public static void RingAttack(Transform t, int seperator, Quaternion startingRot)
     {
-        Quaternion adjustedRot = new Quaternion();
+        Quaternion adjustedRot;
         for (int i = 0; i < anglesX.Length; i += seperator)
         {
             Rigidbody shotProj = Instantiate(projectile, t.position, startingRot);
@@ -89,7 +89,10 @@ public class bossFight : MonoBehaviour
             shotProj.transform.rotation = adjustedRot;
             projectileScript ps = shotProj.GetComponent<projectileScript>();
             ps.damage = 1;
-            spriteNames.TryGetValue("RedSingle", out ps.startingTexture);
+            Sprite tempSprite;
+            if (seperator == 1) spriteNames.TryGetValue("RedDouble", out tempSprite);
+            else spriteNames.TryGetValue("GreenSingle", out tempSprite);
+            ps.StartingTexture = tempSprite;
             //ps.startingTexture = value;
             shotProj.AddForce(shotProj.transform.forward * fire_speed, ForceMode.Impulse);
         }
@@ -104,12 +107,17 @@ public class bossFight : MonoBehaviour
         ps.isShrap = shrap;
         ps.bounceCount = bc;
         ps.pickupAble = pickup;
+        Sprite tempSprite = null;
+        if (shrap) spriteNames.TryGetValue("GreenQuad", out tempSprite);
+        else if (bc > 0) spriteNames.TryGetValue("Bounce" + (bc + 1), out tempSprite);
+        else spriteNames.TryGetValue("BlueSingle", out tempSprite);
+        if (tempSprite != null) ps.StartingTexture = tempSprite;
         proj.AddForce(transform.forward * fire_speed, ForceMode.Impulse);
     }
 
     void ShotgunAttack()
     {
-        Quaternion adjustedRot = new Quaternion();
+        Quaternion adjustedRot;
         for (int i = 0; i < 3; i++)
         {
             Rigidbody shotProj = Instantiate(projectile, firePoint.position, transform.rotation);
@@ -117,7 +125,8 @@ public class bossFight : MonoBehaviour
             shotProj.transform.rotation = adjustedRot;
             projectileScript ps = shotProj.GetComponent<projectileScript>();
             ps.damage = 1;
-            spriteNames.TryGetValue("GreenTriple", out ps.startingTexture);
+            spriteNames.TryGetValue("GreenSingle", out Sprite tempSprite);
+            ps.StartingTexture = tempSprite;
             shotProj.AddForce(shotProj.transform.forward * fire_speed, ForceMode.Impulse);
 
 
